@@ -202,6 +202,7 @@ extern NSString* preferredLang;
     
     NSString * admin = @"admin";
     NSString * password = @"password";
+    //integer_t port = 80;
     [soap Authenticate:admin:password];  //认证
     
     viewLoaded=YES;

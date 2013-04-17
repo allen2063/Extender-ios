@@ -23,7 +23,7 @@
 @property (strong, nonatomic) NSURLConnection *conn;
 @property (strong, nonatomic) NSMutableString *getXMLResults;
 
--(void)Authenticate:(id)NewUsername   :(id)NewPassword;
+-(void)Authenticate:(id)NewUsername   :(id)NewPassword ;
 -(void)GetAPInfo :(id)NewRadio;
 -(void)CofigurationStarted;
 -(void)SetExtenderMode:(NSString *)NweExtenderMode :(NSString *)Nwe2GRadioMode :(NSString *)Nwe5GRadioMode :(NSString *)NweBondEthernet;

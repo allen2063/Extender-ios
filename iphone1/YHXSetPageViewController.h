@@ -58,6 +58,7 @@
 
 -(void)showTableView;
 -(IBAction)switchChange;
+-(IBAction)touchDown:(id)sender;
 
 -(void)getName:(NSString *)name andSecurity:(NSString *)security andCode:(NSString *)code;
 @end

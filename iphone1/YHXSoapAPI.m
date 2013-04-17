@@ -22,7 +22,7 @@
 extern NSString* preferredLang;
 
 
--(void)Authenticate:(id)NewUsername   :(id)NewPassword
+-(void)Authenticate:(id)NewUsername   :(id)NewPassword 
 {
     matchingElement = @"ResponseCode";
 
@@ -41,7 +41,7 @@ extern NSString* preferredLang;
                           "</SOAP-ENV:Envelope>\r\n",NewPassword,NewUsername];
     NSLog(@"%@",soapMsg);
     
-    NSURL * url = [NSURL URLWithString:@"http://www.mywifiext.com/soap/server_sa/"];
+    NSURL * url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.mywifiext.com/soap/server_sa/"]] ;
     NSMutableURLRequest * req = [NSMutableURLRequest requestWithURL:url];
     NSString *msgLength = [NSString stringWithFormat:@"%d", [soapMsg length]];
     
@@ -373,7 +373,7 @@ extern NSString* preferredLang;
     }
 }
 
--(void)SetWLANWEPByKeys:(NSString *)NewRadio :(NSString *)NewSSID :(NSString *)NewChannel :(NSString *)NewWirelessMode :(NSString *)NewWEPAuthType :(id)NewWEPLength :(id) NewKeyIndex :(NSString *) Newkey1 :(NSString *) Newkey2:(NSString *) Newkey3:(NSString *) Newkey4
+-(void)SetWLANWEPByKeys:(NSString *)NewRadio :(NSString *)NewSSID :(NSString *)NewChannel :(NSString *)NewWirelessMode :(NSString *)NewWEPAuthType :(id)NewWEPLength :(id) NewKeyIndex :(NSString *) Newkey1 :(NSString *) Newkey2 :(NSString *) Newkey3 :(NSString *) Newkey4
 {
     matchingElement = @"ResponseCode";
     matchingElement1 = @"APList";

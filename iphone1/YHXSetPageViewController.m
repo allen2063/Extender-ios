@@ -59,6 +59,15 @@ extern NSString* preferredLang;
     return self;
 }
 
+-(IBAction)touchDown:(id)sender;
+{
+    [name resignFirstResponder];
+    [codeTex resignFirstResponder];
+    [UIView animateWithDuration:0.3f animations:^{
+        CGRect rect = CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height);
+        self.view.frame = rect;}];
+}
+
 -(IBAction)switchChange
 {
     if (    switchView.on == YES) {
@@ -80,6 +89,7 @@ extern NSString* preferredLang;
 
         self.navigationItem.rightBarButtonItem.enabled=YES;
         codeTex.clearsContextBeforeDrawing=YES;
+        codeTex.text=@"";
         securityLabel.text=securityExt;
     }else  {
         [self showTableView];
@@ -95,6 +105,15 @@ extern NSString* preferredLang;
         }
     }
     NSLog(@"%@123123",securityExt);
+    //[switchView resignFirstResponder];
+    
+        [self touchDown:codeTex];
+    
+//    [name resignFirstResponder];
+//    [codeTex resignFirstResponder];
+//    [UIView animateWithDuration:0.3f animations:^{
+//        CGRect rect = CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height);
+//        self.view.frame = rect;}];
 }
 
 -(void)deallocKeys
@@ -369,7 +388,7 @@ extern NSString* preferredLang;
             self.navigationItem.rightBarButtonItem.enabled=YES;
         }
     }
-    else if(switchView.on==NO)    { self.navigationItem.rightBarButtonItem.enabled=NO;}
+    else if(switchView.on==NO&& ![securityExt isEqualToString:@"OFF"])    { self.navigationItem.rightBarButtonItem.enabled=NO;}
     [textField resignFirstResponder];
     
     NSLog(@"%@ 11 %@ 22 %@",securityExt,NewKeyIndex,key1TextField.text);
@@ -381,11 +400,7 @@ extern NSString* preferredLang;
     NSString * Auto= @"Auto";
     
     NSString * NewWEPLength = @"64";
-    //NewKeyIndex = @"1";
-//    NSString * NewKey1 = @"";
-//    NSString * NewKey2 = @"";
-//    NSString * NewKey3 = @"";
-//    NSString * NewKey4 = @"";
+
     activityIndicator = [[UIActivityIndicatorView alloc]init];
     [activityIndicator setCenter:CGPointMake(160,250)];
     [activityIndicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -396,9 +411,9 @@ extern NSString* preferredLang;
     }
     [activityIndicator startAnimating];
     
-//    if ([name.text isEqualToString:@""]) {
-//        [ssidExt appendString:@"_EXT"];
-//    }
+    if (![name.text isEqualToString:@""]) {
+        [ssidExt setString:name.text];
+    }
     
     if ([securityExt rangeOfString:@"OFF"].length>0) {
         [soap SetWLANNoSecurity:newRadio :ssidExt :Auto :Auto];
@@ -411,6 +426,8 @@ extern NSString* preferredLang;
         NSLog(@"密码 %@",codeExt);
         NSLog(@"名字 %@",ssidExt);
     }
+    [UIView animateWithDuration:0.2 animations:^{[DataTable setFrame:CGRectMake(0,420,320,150)];}];           //收起来
+    [self touchDown:codeTex];//  收键盘
     
 }
 
