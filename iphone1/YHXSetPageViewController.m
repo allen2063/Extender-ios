@@ -395,8 +395,31 @@ extern NSString* preferredLang;
     return YES;
 }
 
--(void)Done
-{   NSString * newRadio= @"2.4G";
+-(int)Done
+{
+    if (codeExt.length<8) {
+        
+        if ([preferredLang isEqualToString:@"zh-Hans"]) {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"输入密码错误"
+                                                            message:[NSString stringWithFormat:@"密码需要大于等于8位！"]
+                                                           delegate:self
+                                                  cancelButtonTitle:@"确定"
+                                                  otherButtonTitles:nil];
+            [alert show];
+        }else {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failed to enter the password"
+                                                            message:[NSString stringWithFormat:@"Please make sure the password is more than 7 characters"]
+                                                           delegate:self
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            [alert show];
+        }
+        self.navigationItem.rightBarButtonItem.enabled=NO;
+        return 0;
+    }
+
+    
+    NSString * newRadio= @"2.4G";
     NSString * Auto= @"Auto";
     
     NSString * NewWEPLength = @"64";
@@ -428,7 +451,7 @@ extern NSString* preferredLang;
     }
     [UIView animateWithDuration:0.2 animations:^{[DataTable setFrame:CGRectMake(0,420,320,150)];}];           //收起来
     [self touchDown:codeTex];//  收键盘
-    
+    return 0;
 }
 
 -(void)finishAndSetEnable:(NSNotification *)note
