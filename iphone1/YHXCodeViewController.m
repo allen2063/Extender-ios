@@ -35,6 +35,35 @@ extern NSString* preferredLang;
     return self;
 }
 
+- (void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    //if([codeTextField isFirstResponder])
+        [codeTextField resignFirstResponder];
+        codeTextField.text=@"";
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    if ([securityLabel.text rangeOfString: @"OFF"].length>0) {
+        codeTextField.backgroundColor = [UIColor grayColor];
+        self.navigationItem.rightBarButtonItem.enabled=YES;
+        
+        if ([preferredLang isEqualToString:@"zh-Hans"]) {
+            codeTextField.placeholder =@"无需输入密码";
+        }else codeTextField.placeholder =@"Don't need to enter a password";
+        
+        self.codeTextField.userInteractionEnabled=NO;
+        
+    }else {
+        self.navigationItem.rightBarButtonItem.enabled=NO;
+        codeTextField.backgroundColor = [UIColor whiteColor];
+        if ([preferredLang isEqualToString:@"zh-Hans"]) {
+            codeTextField.placeholder =@"请输入密码";
+        }else codeTextField.placeholder =@"Please enter the password";
+        
+        self.codeTextField.userInteractionEnabled=YES;
+    }
+}
+
 - (void)viewDidLoad
 {
     getCode=@"";        // 无密码时不点击键盘也能获得初值
@@ -43,9 +72,19 @@ extern NSString* preferredLang;
     [nc addObserver:self selector:@selector(error:) name:@"codeError" object:nil];
     [nc addObserver:self selector:@selector(error:) name:@"False" object:nil];
     soap = [[YHXSoapAPI alloc]init];
+    if ([isextender isEqualToString:@"2"]) {
+        soapFor5G =[[YHXSoapFor5G alloc]init];
+    }
+    if (!setPage) {
+        setPage = [[YHXSetPageViewController alloc]init];
+        NSLog(@"string!!!");
+    }
     
     activityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
-
+    if ([activityIndicator isAnimating]) {
+        [activityIndicator stopAnimating];
+    }
+    
     if ([preferredLang isEqualToString:@"zh-Hans"]) {
         codeTextField.placeholder =@"请输入密码";
         
@@ -96,37 +135,41 @@ extern NSString* preferredLang;
     self.navigationItem.rightBarButtonItem.enabled=NO;
     
 }
--(void)getNameAndSecurity:(NSString*)name1 :(NSString*)security1
+-(void)getNameAndSecurity:(NSString*)name1 :(NSString*)security1 :(NSString *)channel
 {
     nameLabel.text=name1;
     securityLabel.text=security1;
-    
-   
-    
-    
+    Channel = channel;
+    NSLog(@"channel:%@   security:%@",channel,security1);
+
     NSLog(@"%@",securityLabel.text);
     
-    NSLog(@"%@23232",securityLabel.text);
     if ([securityLabel.text rangeOfString: @"OFF"].length>0) {
         codeTextField.backgroundColor = [UIColor grayColor];
+        self.navigationItem.rightBarButtonItem.enabled=YES;
         
         if ([preferredLang isEqualToString:@"zh-Hans"]) {
             codeTextField.placeholder =@"无需输入密码";
         }else codeTextField.placeholder =@"Don't need to enter a password";
-
-        
-        
+      
         self.codeTextField.userInteractionEnabled=NO;
         
-    }else self.navigationItem.rightBarButtonItem.enabled=NO;
-    
+    }else {
+        self.navigationItem.rightBarButtonItem.enabled=NO;
+        codeTextField.backgroundColor = [UIColor whiteColor];
+        if ([preferredLang isEqualToString:@"zh-Hans"]) {
+            codeTextField.placeholder =@"请输入密码";
+        }else codeTextField.placeholder =@"Please enter the password";
+        
+        self.codeTextField.userInteractionEnabled=YES;
+          }
 }
 
 -(void)textFieldDidBeginEditing:(UITextField *)textField
 {
 //CGRect curFrame=self.view.frame;
-    textField.returnKeyType =UIReturnKeyDone;//return键变成什么键
-    textField.clearButtonMode =UITextFieldViewModeWhileEditing;//输入框中是否有叉号，在什么时候显示，用于一次性删除输入框中的内容
+    textField.returnKeyType =UIReturnKeyDone;                   //return键变成什么键
+    textField.clearButtonMode =UITextFieldViewModeWhileEditing; //输入框中是否有叉号，在什么时候显示，用于一次性删除输入框中的内容
     [UIView animateWithDuration:0.3f animations:^{
         //int offset = curFrame.origin.y+96-(self.view.frame.size.height-216);
         CGRect rect;
@@ -152,8 +195,6 @@ extern NSString* preferredLang;
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    
-    
     [UIView animateWithDuration:0.3f animations:^{
         CGRect rect = CGRectMake(0.0f, 0.0f, self.view.frame.size.width, self.view.frame.size.height);
         self.view.frame = rect;}];          //view 回复到原处
@@ -175,16 +216,31 @@ extern NSString* preferredLang;
     NSString * NewWEPLength = @"64";
     NSString * NewVerify = @"0";
     NSString * NewKeyIndex = @"1";
-    if ([securityLabel.text rangeOfString:@"OFF"].length>0) {
-        [soap SetRouterWLANNoSecurity:newRadio :nameLabel.text :Auto :Auto :NewVerify];
-    }
-    else if ([securityLabel.text rangeOfString:@"WEP"].length>0){
-        [soap SetRouterWLANWEPByKeys:newRadio :nameLabel.text :Auto :Auto :Auto :NewWEPLength :NewKeyIndex :getCode :NewVerify];}
-    else if([securityLabel.text rangeOfString:@"WPA"].length>0){
+    NSLog(@"%@",Channel);
     
-        [soap SetRouterWLANWPAPSKByPassphrase:newRadio :nameLabel.text :Auto :Auto :securityLabel.text :getCode :NewVerify];
-    }
+    if ([Channel isEqualToString:@"2.4G"]) {
+        
+      if ([securityLabel.text rangeOfString:@"OFF"].length>0) {
+          [soap SetRouterWLANNoSecurity:newRadio :nameLabel.text :Auto :Auto :NewVerify];
+      }
+      else if ([securityLabel.text rangeOfString:@"WEP"].length>0){
+          [soap SetRouterWLANWEPByKeys:newRadio :nameLabel.text :Auto :Auto :Auto :NewWEPLength :NewKeyIndex :getCode :NewVerify];}
+      else if([securityLabel.text rangeOfString:@"WPA"].length>0){
     
+          [soap SetRouterWLANWPAPSKByPassphrase:newRadio :nameLabel.text :Auto :Auto :securityLabel.text :getCode :NewVerify];
+      }                       //securityLabel.text   @"WPA2-PSK-AES"
+    }
+    else if ([Channel isEqualToString:@"5G"]){
+        if ([securityLabel.text rangeOfString:@"OFF"].length>0) {
+            [soapFor5G SetRouterWLANNoSecurity:@"5G" :nameLabel.text :Auto :Auto :NewVerify];
+        }
+        else if ([securityLabel.text rangeOfString:@"WEP"].length>0){
+            [soapFor5G SetRouterWLANWEPByKeys:@"5G" :nameLabel.text :Auto :Auto :Auto :NewWEPLength :NewKeyIndex :getCode :NewVerify];}
+        else if([securityLabel.text rangeOfString:@"WPA"].length>0){
+            
+            [soapFor5G SetRouterWLANWPAPSKByPassphrase:@"5G" :nameLabel.text :Auto :Auto :securityLabel.text :getCode :NewVerify];
+        }
+    }
     
     [activityIndicator setCenter:CGPointMake(160,250)];
     [activityIndicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -199,7 +255,10 @@ extern NSString* preferredLang;
 
 -(void)nextPage:(NSNotification *)note
 {
-    
+    if (setPage) {
+        [setPage release];
+        setPage = [[YHXSetPageViewController alloc]init];
+    }
     if ([activityIndicator isAnimating]) {
         [activityIndicator stopAnimating];
     }
@@ -210,17 +269,18 @@ extern NSString* preferredLang;
             
             [codeTextField resignFirstResponder];
         } completion:^(BOOL finished) {
-           setPage = [[YHXSetPageViewController alloc]init];
-            [setPage getName:nameLabel.text andSecurity:securityLabel.text andCode:getCode];
+            if ([Channel isEqualToString:@"2.4G"]) {
+                [setPage getName:nameLabel.text andSecurity:securityLabel.text andCode:getCode andChanle:@"2.4G"] ;
+            }else [setPage getName:nameLabel.text andSecurity:securityLabel.text andCode:getCode andChanle:@"5G"] ;
             [self.navigationController pushViewController:setPage animated:YES];
         }];
     }
     else{
-        setPage = [[YHXSetPageViewController alloc]init];
-        [setPage getName:nameLabel.text andSecurity:securityLabel.text andCode:getCode];
+        if ([Channel isEqualToString:@"2.4G"]) {
+            [setPage getName:nameLabel.text andSecurity:securityLabel.text andCode:getCode andChanle:@"2.4G"] ;
+        }else [setPage getName:nameLabel.text andSecurity:securityLabel.text andCode:getCode andChanle:@"5G"] ;
         [self.navigationController pushViewController:setPage animated:YES];
     }
-    
 }
 
 - (void)dealloc
@@ -229,7 +289,6 @@ extern NSString* preferredLang;
     [activityIndicator release];
     [soap release];
     [setPage release];
-
 
     [super dealloc];
 }
